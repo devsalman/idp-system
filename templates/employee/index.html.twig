@@ -1,0 +1,190 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+{% include '_partials/breadcrumb.html.twig' with { page_title: 'Pegawai' } %}
+
+<div
+  class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+>
+  <div class="max-w-full overflow-x-auto">
+    <table class="min-w-full">
+      <!-- table header start -->
+      <thead>
+        <tr class="border-b border-gray-100 dark:border-gray-800">
+          <th class="px-5 py-3 sm:px-6">
+            <div class="flex items-center">
+              <p
+                class="font-medium text-gray-500 text-theme-xs dark:text-gray-400"
+              >
+                Pegawai
+              </p>
+            </div>
+          </th>
+          <th class="px-5 py-3 sm:px-6">
+            <div class="flex items-center">
+              <p
+                class="font-medium text-gray-500 text-theme-xs dark:text-gray-400"
+              >
+                NIP
+              </p>
+            </div>
+          </th>
+          <th class="px-5 py-3 sm:px-6">
+            <div class="flex items-center">
+              <p
+                class="font-medium text-gray-500 text-theme-xs dark:text-gray-400"
+              >
+                Peran
+              </p>
+            </div>
+          </th>
+          <th class="px-5 py-3 sm:px-6">
+            <div class="flex items-center">
+              <p
+                class="font-medium text-gray-500 text-theme-xs dark:text-gray-400"
+              >
+                Unit
+              </p>
+            </div>
+          </th>
+          <th class="px-5 py-3 sm:px-6">
+            <div class="flex items-center">
+              <p
+                class="font-medium text-gray-500 text-theme-xs dark:text-gray-400"
+              >
+                Angkatan
+              </p>
+            </div>
+          </th>
+          <th class="px-5 py-3 sm:px-6">
+            <div class="flex items-center">
+              <p
+                class="font-medium text-gray-500 text-theme-xs dark:text-gray-400"
+              >
+                Status
+              </p>
+            </div>
+          </th>
+          <th class="px-5 py-3 sm:px-6">
+            <div class="flex items-center">
+              <p
+                class="font-medium text-gray-500 text-theme-xs dark:text-gray-400"
+              >
+                Token VC
+              </p>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <!-- table header end -->
+      <!-- table body start -->
+      <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+        {% for employee in employees %}
+        <tr>
+          <td class="px-5 py-4 sm:px-6">
+            <div class="flex items-center">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                  <span
+                    class="flex h-full w-full items-center justify-center text-theme-sm font-semibold text-gray-600 dark:text-gray-300"
+                  >
+                    {{ employee.fullname|slice(0, 1)|upper }}
+                  </span>
+                </div>
+
+                <div>
+                  <span
+                    class="block font-medium text-gray-800 text-theme-sm dark:text-white/90"
+                  >
+                    {{ employee.fullname }}
+                  </span>
+                  <span
+                    class="block text-gray-500 text-theme-xs dark:text-gray-400"
+                  >
+                    {{ employee.email }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="px-5 py-4 sm:px-6">
+            <div class="flex items-center">
+              <p class="text-gray-500 text-theme-sm dark:text-gray-400">
+                {{ employee.nip }}
+              </p>
+            </div>
+          </td>
+          <td class="px-5 py-4 sm:px-6">
+            <div class="flex items-center">
+              <p class="text-gray-500 text-theme-sm dark:text-gray-400">
+                {{ employee.role }}
+              </p>
+            </div>
+          </td>
+          <td class="px-5 py-4 sm:px-6">
+            <div class="flex items-center">
+              <p class="text-gray-500 text-theme-sm dark:text-gray-400">
+                {{ employee.unit.name }}
+              </p>
+            </div>
+          </td>
+          <td class="px-5 py-4 sm:px-6">
+            <div class="flex items-center">
+              <p class="text-gray-500 text-theme-sm dark:text-gray-400">
+                {{ employee.entryYear }}
+              </p>
+            </div>
+          </td>
+          <td class="px-5 py-4 sm:px-6">
+            <div class="flex items-center">
+              {% set status_class = {
+                'active': 'bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-500',
+                'resigned': 'bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-400',
+                'suspended': 'bg-error-50 text-error-700 dark:bg-error-500/15 dark:text-error-500'
+              } %}
+              <p
+                class="rounded-full px-2 py-0.5 text-theme-xs font-medium {{ status_class[employee.status] ?? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300' }}"
+              >
+                {{ employee.status }}
+              </p>
+            </div>
+          </td>
+          <td class="px-5 py-4 sm:px-6">
+            <div class="flex items-center">
+              {% if employee.tokenStatus == 'claimed' %}
+              <p
+                class="rounded-full bg-success-50 px-2 py-0.5 text-theme-xs font-medium text-success-700 dark:bg-success-500/15 dark:text-success-500"
+              >
+                Terklaim
+              </p>
+              {% elseif employee.tokenStatus == 'sent' %}
+              <p
+                class="rounded-full bg-warning-50 px-2 py-0.5 text-theme-xs font-medium text-warning-700 dark:bg-warning-500/15 dark:text-warning-400"
+              >
+                Dikirim
+              </p>
+              {% else %}
+              <p
+                class="rounded-full bg-gray-100 px-2 py-0.5 text-theme-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+              >
+                Belum
+              </p>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7" class="px-5 py-8 text-center">
+            <p class="text-theme-sm text-gray-500 dark:text-gray-400">
+              Belum ada data pegawai.
+            </p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <!-- table body end -->
+    </table>
+  </div>
+</div>
+{% endblock %}
