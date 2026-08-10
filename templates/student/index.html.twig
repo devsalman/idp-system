@@ -71,7 +71,10 @@
       <!-- table body start -->
       <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
         {% for student in students %}
-        <tr>
+        <tr
+          class="cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.03]"
+          @click="window.location = '{{ path('app_student_show', { id: student.id }) }}'"
+        >
           <td class="px-5 py-4 sm:px-6">
             <div class="flex items-center">
               <div class="flex items-center gap-3">
@@ -84,11 +87,12 @@
                 </div>
 
                 <div>
-                  <span
-                    class="block font-medium text-gray-800 text-theme-sm dark:text-white/90"
+                  <a
+                    href="{{ path('app_student_show', { id: student.id }) }}"
+                    class="block font-medium text-gray-800 text-theme-sm hover:text-brand-500 dark:text-white/90 dark:hover:text-brand-400"
                   >
                     {{ student.fullname }}
-                  </span>
+                  </a>
                   <span
                     class="block text-gray-500 text-theme-xs dark:text-gray-400"
                   >

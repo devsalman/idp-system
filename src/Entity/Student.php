@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\StudentRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StudentRepository::class)]
@@ -28,22 +29,29 @@ class Student
     private ?string $did = null;
 
     #[ORM\Column(length: 255, unique: true)]
-    private string $email;
+    #[Assert\NotBlank(message: 'Email wajib diisi.')]
+    #[Assert\Email(message: 'Format email tidak valid.')]
+    private string $email = '';
 
     #[ORM\Column(length: 255)]
-    private string $fullname;
+    #[Assert\NotBlank(message: 'Nama lengkap wajib diisi.')]
+    private string $fullname = '';
 
     #[ORM\Column(length: 32, unique: true)]
-    private string $nim;
+    #[Assert\NotBlank(message: 'NIM wajib diisi.')]
+    private string $nim = '';
 
     #[ORM\Column(type: Types::SMALLINT)]
-    private int $entryYear;
+    #[Assert\NotBlank(message: 'Tahun masuk wajib diisi.')]
+    private ?int $entryYear = null;
 
     #[ORM\ManyToOne(targetEntity: OrgUnit::class)]
     #[ORM\JoinColumn(name: 'unit_id', referencedColumnName: 'id', nullable: false)]
-    private OrgUnit $unit;
+    #[Assert\NotBlank(message: 'Unit organisasi wajib diisi.')]
+    private ?OrgUnit $unit = null;
 
     #[ORM\Column(length: 20, options: ['default' => 'active'])]
+    #[Assert\NotBlank(message: 'Status wajib diisi.')]
     #[Assert\Choice(choices: [self::STATUS_ACTIVE, self::STATUS_GRADUATED, self::STATUS_SUSPENDED])]
     private string $status = self::STATUS_ACTIVE;
 
@@ -51,7 +59,7 @@ class Student
     private ?string $tokenHash = null;
 
     #[ORM\Column(length: 10, nullable: true)]
-    #[Assert\Choice(choices: [self::TOKEN_STATUS_SENT, self::TOKEN_STATUS_CLAIMED], allowNull: true)]
+    #[Assert\Choice(choices: [self::TOKEN_STATUS_SENT, self::TOKEN_STATUS_CLAIMED])]
     private ?string $tokenStatus = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
@@ -110,24 +118,24 @@ class Student
         return $this;
     }
 
-    public function getEntryYear(): int
+    public function getEntryYear(): ?int
     {
         return $this->entryYear;
     }
 
-    public function setEntryYear(int $entryYear): static
+    public function setEntryYear(?int $entryYear): static
     {
         $this->entryYear = $entryYear;
 
         return $this;
     }
 
-    public function getUnit(): OrgUnit
+    public function getUnit(): ?OrgUnit
     {
         return $this->unit;
     }
 
-    public function setUnit(OrgUnit $unit): static
+    public function setUnit(?OrgUnit $unit): static
     {
         $this->unit = $unit;
 
