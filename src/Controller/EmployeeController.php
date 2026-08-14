@@ -23,6 +23,26 @@ class EmployeeController extends AbstractController
         ]);
     }
 
+    #[Route('/employee', name: 'app_employee_new', methods: ['GET', 'POST'])]
+    public function form(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $employee = new Employee();
+        $form = $this->createForm(EmployeeType::class, $employee);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $employee = $form->getData();
+            $entityManager->persist($employee);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Data pegawai berhasil ditambahkan.');
+
+            return $this->redirectToRoute('app_employee_show', ['id' => $employee->getId()]);
+        }
+
+        return $this->render('employee/form_new.html.twig', ['form' => $form]);
+    }
+
     #[Route('/employees/{id}', name: 'app_employee_show', methods: ['GET', 'POST'])]
     public function show(EmployeeRepository $employeeRepository, EntityManagerInterface $entityManager, Request $request, int $id): Response
     {

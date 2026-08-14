@@ -53,7 +53,7 @@ class Student
     #[ORM\Column(length: 20, options: ['default' => 'active'])]
     #[Assert\NotBlank(message: 'Status wajib diisi.')]
     #[Assert\Choice(choices: [self::STATUS_ACTIVE, self::STATUS_GRADUATED, self::STATUS_SUSPENDED])]
-    private string $status = self::STATUS_ACTIVE;
+    private ?string $status = self::STATUS_ACTIVE;
 
     #[ORM\Column(length: 64, nullable: true)]
     private ?string $tokenHash = null;
@@ -142,12 +142,12 @@ class Student
         return $this;
     }
 
-    public function getStatus(): string
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(?string $status): static
     {
         $this->status = $status;
 

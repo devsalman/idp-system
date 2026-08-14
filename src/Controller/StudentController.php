@@ -33,6 +33,9 @@ class StudentController extends AbstractController
             $student = $form->getData();
             $entityManager->persist($student);
             $entityManager->flush();
+
+            $this->addFlash('success', 'Data mahasiswa berhasil ditambahkan.');
+
             return $this->redirectToRoute("app_student_show", [
                 "id" => $student->getId(),
             ]);
