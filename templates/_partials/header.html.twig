@@ -68,10 +68,10 @@
       <!-- Hamburger Toggle BTN -->
 
       <a href="{{ path('app_dashboard') }}" class="lg:hidden">
-        <img class="dark:hidden" src="{{ asset('build/src/images/logo/logo.svg') }}" alt="Logo" />
+        <img class="dark:hidden" src="{{ asset('images/logo/logo.svg') }}" alt="Logo" />
         <img
           class="hidden dark:block"
-          src="{{ asset('build/src/images/logo/logo-dark.svg') }}"
+          src="{{ asset('images/logo/logo-dark.svg') }}"
           alt="Logo"
         />
       </a>
@@ -161,7 +161,7 @@
           @click.prevent="dropdownOpen = ! dropdownOpen"
         >
           <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
-            <img src="{{ asset('build/src/images/user/owner.jpg') }}" alt="User" />
+            <img src="{{ asset('images/user/owner.jpg') }}" alt="User" />
           </span>
 
           <span class="text-theme-sm mr-1 block font-medium"> Admin </span>

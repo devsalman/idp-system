@@ -9,8 +9,3 @@
 /vendor/
 ###< symfony/framework-bundle ###
 
-###> tailadmin frontend build artifacts ###
-/public/build/
-/assets/node_modules/
-/assets/public/
-###< tailadmin frontend build artifacts ###
