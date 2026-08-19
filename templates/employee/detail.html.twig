@@ -84,87 +84,86 @@
         {{ form_widget(form.status, { attr: { class: select_class } }) }}
         {{ form_errors(form.status) }}
       </div>
-      </div>
-        <div class="mt-6 flex items-center gap-3">
-        <button
-          type="submit"
-          class="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-6 py-3 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600"
-        >
-          Simpan Perubahan
-        </button>
-        <a
-          href="{{ path('app_employee_index') }}"
-          class="inline-flex items-center justify-center gap-2 rounded-lg bg-gray-100 px-6 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-200 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10"
-        >
-          Batal
-        </a>
-      </div>
+    </div>
+    <div class="mt-6 flex items-center gap-3">
+      <button
+        type="submit"
+        class="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-6 py-3 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600"
+      >
+        Simpan Perubahan
+      </button>
+      <a
+        href="{{ path('app_employee_index') }}"
+        class="inline-flex items-center justify-center gap-2 rounded-lg bg-gray-100 px-6 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-200 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10"
+      >
+        Batal
+      </a>
     </div>
   </div>
-  {{ form_end(form) }}
+</div>
+{{ form_end(form) }}
 
-  <div class="mt-6 rounded-lg border border-gray-200 p-5 dark:border-gray-800 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-    <h3 class="text-sm font-semibold text-gray-800 dark:text-white/90">
-      Kredensial SSI
-    </h3>
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-      <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-3 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 sm:w-auto">
+<div class="mt-6 rounded-lg border border-gray-200 p-5 dark:border-gray-800 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <h3 class="text-sm font-semibold text-gray-800 dark:text-white/90">
+    Kredensial SSI
+  </h3>
+</div>
+<div class="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2">
+  <div>
+    <label class="{{ label_class }}">
+      DID
+    </label>
+    <input
+      type="text"
+      disabled
+      value="{{ employee.did ?? '—' }}"
+      class="{{ disabled_class }}"
+    />
+  </div>
+
+  <div>
+    <label class="{{ label_class }}">
+      Token Status
+    </label>
+    <input
+      type="text"
+      disabled
+      value="{{ employee.tokenStatus ?? 'belum' }}"
+      class="{{ disabled_class }}"
+    />
+  </div>
+
+  <div>
+    <label class="{{ label_class }}">
+      Token Hash
+    </label>
+    <input
+      type="text"
+      disabled
+      value="{{ employee.tokenHash ?? '—' }}"
+      class="{{ disabled_class }}"
+    />
+  </div>
+
+  <div>
+    <label class="{{ label_class }}">
+      Token Kedaluwarsa
+    </label>
+    <input
+      type="text"
+      disabled
+      value="{{ employee.tokenExpiresAt ? employee.tokenExpiresAt|date('d-m-Y H:i') : '—' }}"
+      class="{{ disabled_class }}"
+    />
+  </div>
+  <div class="mt-6 flex items-center gap-3">
+    <button class="flex w-full items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-3 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 sm:w-auto">
       <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M3.04175 7.06206V14.375C3.04175 14.6511 3.26561 14.875 3.54175 14.875H16.4584C16.7346 14.875 16.9584 14.6511 16.9584 14.375V7.06245L11.1443 11.1168C10.457 11.5961 9.54373 11.5961 8.85638 11.1168L3.04175 7.06206ZM16.9584 5.19262C16.9584 5.19341 16.9584 5.1942 16.9584 5.19498V5.20026C16.9572 5.22216 16.946 5.24239 16.9279 5.25501L10.2864 9.88638C10.1145 10.0062 9.8862 10.0062 9.71437 9.88638L3.07255 5.25485C3.05342 5.24151 3.04202 5.21967 3.04202 5.19636C3.042 5.15695 3.07394 5.125 3.11335 5.125H16.8871C16.9253 5.125 16.9564 5.15494 16.9584 5.19262ZM18.4584 5.21428V14.375C18.4584 15.4796 17.563 16.375 16.4584 16.375H3.54175C2.43718 16.375 1.54175 15.4796 1.54175 14.375V5.19498C1.54175 5.1852 1.54194 5.17546 1.54231 5.16577C1.55858 4.31209 2.25571 3.625 3.11335 3.625H16.8871C17.7549 3.625 18.4584 4.32843 18.4585 5.19622C18.4585 5.20225 18.4585 5.20826 18.4584 5.21428Z" fill=""></path>
       </svg>
-        Kirim Kredensial
-      </button>
-    </div>
-  </div>
-  <div class="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2">
-    <div>
-      <label class="{{ label_class }}">
-        DID
-      </label>
-      <input
-        type="text"
-        disabled
-        value="{{ employee.did ?? '—' }}"
-        class="{{ disabled_class }}"
-      />
-    </div>
-
-    <div>
-      <label class="{{ label_class }}">
-        Token Status
-      </label>
-      <input
-        type="text"
-        disabled
-        value="{{ employee.tokenStatus ?? 'belum' }}"
-        class="{{ disabled_class }}"
-      />
-    </div>
-
-    <div>
-      <label class="{{ label_class }}">
-        Token Hash
-      </label>
-      <input
-        type="text"
-        disabled
-        value="{{ employee.tokenHash ?? '—' }}"
-        class="{{ disabled_class }}"
-      />
-    </div>
-
-    <div>
-      <label class="{{ label_class }}">
-        Token Kedaluwarsa
-      </label>
-      <input
-        type="text"
-        disabled
-        value="{{ employee.tokenExpiresAt ? employee.tokenExpiresAt|date('d-m-Y H:i') : '—' }}"
-        class="{{ disabled_class }}"
-      />
-    </div>
+      Kirim Kredensial
+    </button>
   </div>
 </div>
 {% endblock %}
