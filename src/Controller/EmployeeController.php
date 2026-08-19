@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\Employee;
 use App\Form\EmployeeType;
 use App\Repository\EmployeeRepository;
+use App\Service\CredentialMailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -68,5 +69,24 @@ class EmployeeController extends AbstractController
             'employee' => $employee,
             'form' => $form,
         ]);
+    }
+
+    #[Route('/employees/{id}/send-credential', name: 'app_employee_send_credential', methods: ['POST'])]
+    public function sendCredential(int $id, EmployeeRepository $employeeRepository, CredentialMailService $mailService): Response
+    {
+        $employee = $employeeRepository->find($id);
+
+        if (!$employee instanceof Employee) {
+            throw $this->createNotFoundException('Pegawai tidak ditemukan.');
+        }
+
+        try {
+            $mailService->sendCredentialRequest($employee);
+            $this->addFlash('success', 'Email permintaan kredensial berhasil dikirim ke ' . $employee->getEmail() . '.');
+        } catch (\Throwable $e) {
+            $this->addFlash('error', 'Gagal mengirim email: ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_employee_show', ['id' => $employee->getId()]);
     }
 }

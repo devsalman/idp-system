@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\Student;
 use App\Form\StudentType;
 use App\Repository\StudentRepository;
+use App\Service\CredentialMailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -74,5 +75,24 @@ class StudentController extends AbstractController
             "student" => $student,
             "form" => $form,
         ]);
+    }
+
+    #[Route('/students/{id}/send-credential', name: 'app_student_send_credential', methods: ['POST'])]
+    public function sendCredential(int $id, StudentRepository $studentRepository, CredentialMailService $mailService): Response
+    {
+        $student = $studentRepository->find($id);
+
+        if (!$student instanceof Student) {
+            throw $this->createNotFoundException('Mahasiswa tidak ditemukan.');
+        }
+
+        try {
+            $mailService->sendCredentialRequest($student);
+            $this->addFlash('success', 'Email permintaan kredensial berhasil dikirim ke ' . $student->getEmail() . '.');
+        } catch (\Throwable $e) {
+            $this->addFlash('error', 'Gagal mengirim email: ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_student_show', ['id' => $student->getId()]);
     }
 }
