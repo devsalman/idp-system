@@ -1,0 +1,31 @@
+security:
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    providers:
+        users_in_memory:
+            memory:
+                users:
+                    admin@identitylab.id:
+                        password: '$2y$13$HzwlrxXyrtU2W6p1guplHOBqTApZgQpUVWgcVMzmjG19rQXPrw3Iq'
+                        roles: ['ROLE_ADMIN']
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            lazy: true
+            provider: users_in_memory
+            form_login:
+                login_path: app_signin
+                check_path: app_signin
+                default_target_path: app_dashboard
+                enable_csrf: true
+            logout:
+                path: app_logout
+                target: app_signin
+
+    access_control:
+        - { path: ^/signin, roles: PUBLIC_ACCESS }
+        - { path: ^/, roles: ROLE_ADMIN }
