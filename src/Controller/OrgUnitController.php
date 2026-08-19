@@ -40,7 +40,7 @@ class OrgUnitController extends AbstractController
             return $this->redirectToRoute('app_org_unit_index');
         }
 
-        return $this->render('org_unit/form_new.html.twig', ['form' => $form]);
+        return $this->render('org_unit/form.html.twig', ['form' => $form]);
     }
 
     #[Route('/org-unit/{id}', name: 'app_org_unit_show', methods: ['GET', 'POST'])]
@@ -64,7 +64,7 @@ class OrgUnitController extends AbstractController
             return $this->redirectToRoute('app_org_unit_show', ['id' => $orgUnit->getId()]);
         }
 
-        return $this->render('org_unit/form.html.twig', [
+        return $this->render('org_unit/detail.html.twig', [
             'org_unit' => $orgUnit,
             'form' => $form,
         ]);

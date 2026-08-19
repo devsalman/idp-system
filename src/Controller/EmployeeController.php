@@ -41,7 +41,7 @@ class EmployeeController extends AbstractController
             return $this->redirectToRoute('app_employee_show', ['id' => $employee->getId()]);
         }
 
-        return $this->render('employee/form_new.html.twig', ['form' => $form]);
+        return $this->render('employee/form.html.twig', ['form' => $form]);
     }
 
     #[Route('/employees/{id}', name: 'app_employee_show', methods: ['GET', 'POST'])]
@@ -65,7 +65,7 @@ class EmployeeController extends AbstractController
             return $this->redirectToRoute('app_employee_show', ['id' => $employee->getId()]);
         }
 
-        return $this->render('employee/form.html.twig', [
+        return $this->render('employee/detail.html.twig', [
             'employee' => $employee,
             'form' => $form,
         ]);
