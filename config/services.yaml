@@ -24,5 +24,10 @@ services:
         arguments:
             $baseUrl: '%app.base_url%'
 
+    App\Service\KeyPairService:
+        arguments:
+            $secretsDir: '%env(SECRETS_DIR)%'
+            $baseUrl: '%app.base_url%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
