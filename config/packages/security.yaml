@@ -29,4 +29,5 @@ security:
     access_control:
         - { path: ^/signin, roles: PUBLIC_ACCESS }
         - { path: ^/claim, roles: PUBLIC_ACCESS }
+        - { path: ^/\.well-known/, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: ROLE_ADMIN }

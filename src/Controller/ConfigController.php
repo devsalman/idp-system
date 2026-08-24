@@ -45,4 +45,19 @@ class ConfigController extends AbstractController
 
         return $this->redirectToRoute('app_config');
     }
+
+    #[Route('/.well-known/did.json', name: 'app_well_known_did', methods: ['GET'])]
+    public function didDocument(KeyPairService $keyPairService): Response
+    {
+        $content = $keyPairService->getDidDocumentContent();
+
+        if ($content === null) {
+            throw $this->createNotFoundException('DID document belum dibuat.');
+        }
+
+        return new Response($content, Response::HTTP_OK, [
+            'Content-Type' => 'application/did+json',
+            'Cache-Control' => 'public, max-age=300',
+        ]);
+    }
 }

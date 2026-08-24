@@ -19,7 +19,7 @@ class KeyPairService
     }
 
     /**
-     * @return array{private: bool, public: bool, did: bool, publicKeyContent: ?string}
+     * @return array{private: bool, public: bool, did: bool, publicKeyContent: ?string, didDocumentContent: ?string}
      */
     public function getStatus(): array
     {
@@ -28,12 +28,18 @@ class KeyPairService
             'public' => $this->exists(self::FILE_PUBLIC),
             'did' => $this->exists(self::FILE_DID_DOCUMENT),
             'publicKeyContent' => $this->readIfExists(self::FILE_PUBLIC),
+            'didDocumentContent' => $this->readIfExists(self::FILE_DID_DOCUMENT),
         ];
     }
 
     public function secretsDirectory(): string
     {
         return $this->secretsDir;
+    }
+
+    public function getDidDocumentContent(): ?string
+    {
+        return $this->readIfExists(self::FILE_DID_DOCUMENT);
     }
 
     public function generate(): void
