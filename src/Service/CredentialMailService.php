@@ -38,8 +38,9 @@ class CredentialMailService
         $entity->setTokenExpiresAt($expiresAt);
         $this->entityManager->flush();
 
-        $claimUrl = $this->baseUrl . '/claim/' . $rawToken;
-        $qrCodeDataUri = $this->generateQrCode($claimUrl);
+        $claimUrl = $this->baseUrl . '/credential_offer/' . $rawToken;
+        $claimUrlDeeplink = 'openid-credential-offer://?credential_offer_uri='.urlencode($claimUrl);
+        $qrCodeDataUri = $this->generateQrCode($claimUrlDeeplink);
         $name = $entity->getFullname();
         $email = $entity->getEmail();
 
