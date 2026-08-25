@@ -71,7 +71,7 @@ class EmployeeController extends AbstractController
         ]);
     }
 
-    #[Route('/employees/{id}/send-credential', name: 'app_employee_send_credential', methods: ['POST'])]
+    #[Route('/employees/{id}/send-credential', name: 'app_employee_send_credential', methods: ['GET'])]
     public function sendCredential(int $id, EmployeeRepository $employeeRepository, CredentialMailService $mailService): Response
     {
         $employee = $employeeRepository->find($id);

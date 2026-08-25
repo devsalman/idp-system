@@ -77,7 +77,7 @@ class StudentController extends AbstractController
         ]);
     }
 
-    #[Route('/students/{id}/send-credential', name: 'app_student_send_credential', methods: ['POST'])]
+    #[Route('/students/{id}/send-credential', name: 'app_student_send_credential', methods: ['GET'])]
     public function sendCredential(int $id, StudentRepository $studentRepository, CredentialMailService $mailService): Response
     {
         $student = $studentRepository->find($id);

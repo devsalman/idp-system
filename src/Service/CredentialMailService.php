@@ -18,7 +18,7 @@ class CredentialMailService
     private const TOKEN_LENGTH = 32;
     private const TOKEN_EXPIRY_DAYS = 30;
     private const SENDER_EMAIL = 'noreply@identitylab.id';
-    private const SENDER_NAME = 'IdP Kampus';
+    private const SENDER_NAME = 'Identitylab ID';
 
     public function __construct(
         private readonly MailerInterface $mailer,
@@ -46,7 +46,7 @@ class CredentialMailService
         $templatedEmail = (new TemplatedEmail())
             ->from(new Address(self::SENDER_EMAIL, self::SENDER_NAME))
             ->to($email)
-            ->subject('Permintaan Kredensial SSI — IdP Kampus')
+            ->subject('Permintaan Kredensial SSI — Identitylab')
             ->htmlTemplate('email/credential_request.html.twig')
             ->context([
                 'name' => $name,
@@ -60,16 +60,6 @@ class CredentialMailService
 
     private function generateQrCode(string $data): string
     {
-        $options = new QROptions([
-            'outputInterface' => \chillerlan\QRCode\Output\QRMarkupSVG::class,
-            'eccLevel' => \chillerlan\QRCode\Common\EccLevel::M,
-            'outputBase64' => true,
-            'addQuietzone' => true,
-            'svgAddXmlHeader' => false,
-        ]);
-
-        $qrCode = new QRCode($options);
-
-        return $qrCode->render($data);
+        return "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={$data}";
     }
 }
