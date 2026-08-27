@@ -8,6 +8,7 @@ use App\Repository\EmployeeRepository;
 use App\Repository\StudentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -22,7 +23,7 @@ final class OIDPVCIController extends AbstractController
     }
     
     #[Route('/credential_offer/{token}', name: 'oidpvci_credential_offer', methods: ['GET'])]
-    public function credentialOffer(string $token): JsonResponse
+    public function credentialOffer(Request $request, string $token): JsonResponse
     {
         $tokenHash = hash('sha256', $token);
         $subject = $this->employeeRepository->findOneBy(['tokenHash' => $tokenHash]);
@@ -36,5 +37,19 @@ final class OIDPVCIController extends AbstractController
         if ($subject->getTokenStatus() === 'claimed') {
             return $this->json(['success' => false, 'error' => 'token sudah diklaim'], $status = 400);
         }
+
+        $credentialConfigurationId = [];
+        if ($subject instanceof Employee) array_push($credentialConfigurationId, 'NFEmployeeCredential');
+        else array_push($credentialConfigurationId, 'NFStudentCredential');
+
+        return $this->json([
+            'credential_issuer' => $request->getSchemeAndHttpHost(),
+            'credential_configuration_ids' => $credentialConfigurationId,
+            'grants' => [
+                "urn:ietf:params:oauth:grant-type:pre-authorized_code" => [
+                    'pre-authorized_code' => '123456',
+                ]
+            ]
+        ]);
     }
 }
