@@ -52,4 +52,82 @@ final class OIDPVCIController extends AbstractController
             ]
         ]);
     }
+
+    #[Route('/.well-known/openid-credential-issuer', name: 'oidpvci_metadata', methods: ['GET'])]
+    public function credentialIssuerMetadata(Request $request): JsonResponse
+    {
+        $issuer = $request->getSchemeAndHttpHost();
+
+        return $this->json([
+            'credential_issuer' => $issuer,
+            'credential_endpoint' => $issuer . '/credential',
+            'credential_configurations_supported' => [
+                'NFEmployeeCredential' => [
+                    'format' => 'vc+jwt',
+                    'scope' => 'NFEmployeeCredential',
+                    'cryptographic_binding_methods_supported' => ['jwk'],
+                    'proof_types_supported' => [
+                        'jwt' => [
+                            'proof_signing_alg_values_supported' => ['ES256'],
+                        ],
+                    ],
+                    'credential_metadata' => [
+                        'claims' => [
+                            ['path' => ['email']],
+                            ['path' => ['fullname']],
+                            ['path' => ['role']],
+                            ['path' => ['nip']],
+                            ['path' => ['entryYear']],
+                            ['path' => ['unit']],
+                            ['path' => ['status']],
+                        ],
+                        'display' => [
+                            [
+                                'name' => 'Employee Identity Credential',
+                                'locale' => 'en-US',
+                                'description' => 'Verifiable employee identity credential issued by Identitylab',
+                                'background_color' => '#0f766e',
+                                'text_color' => '#ffffff',
+                            ],
+                        ],
+                    ],
+                ],
+                'NFStudentCredential' => [
+                    'format' => 'vc+jwt',
+                    'scope' => 'NFStudentCredential',
+                    'cryptographic_binding_methods_supported' => ['jwk'],
+                    'proof_types_supported' => [
+                        'jwt' => [
+                            'proof_signing_alg_values_supported' => ['ES256'],
+                        ],
+                    ],
+                    'credential_metadata' => [
+                        'claims' => [
+                            ['path' => ['email']],
+                            ['path' => ['fullname']],
+                            ['path' => ['nim']],
+                            ['path' => ['entryYear']],
+                            ['path' => ['unit']],
+                            ['path' => ['status']],
+                        ],
+                        'display' => [
+                            [
+                                'name' => 'Student Identity Credential',
+                                'locale' => 'en-US',
+                                'description' => 'Verifiable student identity credential issued by Identitylab',
+                                'background_color' => '#1e40af',
+                                'text_color' => '#ffffff',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'display' => [
+                [
+                    'locale' => 'en-US',
+                    'name' => 'Identitylab ID',
+                ],
+            ],
+        ]);
+    }
 }
