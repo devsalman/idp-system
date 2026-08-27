@@ -83,6 +83,12 @@
           exists: status.private,
         },
         {
+          name: 'private.pem',
+          label: 'Private Key (PEM)',
+          description: 'Kunci privat format PEM (EC P-256) untuk menandatangani Access Token & JWT.',
+          exists: status.privatePem,
+        },
+        {
           name: 'public.jwk',
           label: 'Public Key',
           description: 'Kunci publik JWK (EC P-256) untuk memverifikasi tanda tangan.',

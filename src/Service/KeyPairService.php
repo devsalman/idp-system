@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use Firebase\JWT\JWT;
 use RuntimeException;
 
 class KeyPairService
@@ -11,6 +12,7 @@ class KeyPairService
     public const FILE_PRIVATE = 'private.jwk';
     public const FILE_PUBLIC = 'public.jwk';
     public const FILE_DID_DOCUMENT = 'did.json';
+    public const FILE_PRIVATE_PEM = 'private.pem';
 
     public function __construct(
         private readonly string $secretsDir,
@@ -19,7 +21,7 @@ class KeyPairService
     }
 
     /**
-     * @return array{private: bool, public: bool, did: bool, publicKeyContent: ?string, didDocumentContent: ?string}
+     * @return array{private: bool, public: bool, did: bool, privatePem: bool, publicKeyContent: ?string, didDocumentContent: ?string}
      */
     public function getStatus(): array
     {
@@ -27,6 +29,7 @@ class KeyPairService
             'private' => $this->exists(self::FILE_PRIVATE),
             'public' => $this->exists(self::FILE_PUBLIC),
             'did' => $this->exists(self::FILE_DID_DOCUMENT),
+            'privatePem' => $this->exists(self::FILE_PRIVATE_PEM),
             'publicKeyContent' => $this->readIfExists(self::FILE_PUBLIC),
             'didDocumentContent' => $this->readIfExists(self::FILE_DID_DOCUMENT),
         ];
@@ -40,6 +43,41 @@ class KeyPairService
     public function getDidDocumentContent(): ?string
     {
         return $this->readIfExists(self::FILE_DID_DOCUMENT);
+    }
+
+    public function did(): string
+    {
+        return $this->didWeb();
+    }
+
+    public function signAccessToken(array $claims): string
+    {
+        $pem = $this->readIfExists(self::FILE_PRIVATE_PEM);
+
+        if ($pem === null) {
+            throw new RuntimeException('Kunci privat PEM belum dibuat. Silakan generate key pair terlebih dahulu.');
+        }
+
+        $kid = $this->readPrivateKid();
+
+        return JWT::encode($claims, $pem, 'ES256', $kid);
+    }
+
+    private function readPrivateKid(): string
+    {
+        $content = $this->readIfExists(self::FILE_PRIVATE);
+
+        if ($content === null) {
+            throw new RuntimeException('Kunci privat JWK belum dibuat. Silakan generate key pair terlebih dahulu.');
+        }
+
+        $jwk = json_decode($content, true);
+
+        if (!is_array($jwk) || !isset($jwk['kid'])) {
+            throw new RuntimeException('Kunci privat JWK tidak valid atau tidak memiliki "kid".');
+        }
+
+        return $jwk['kid'];
     }
 
     public function generate(): void
@@ -124,6 +162,12 @@ class KeyPairService
         $this->writeFile(self::FILE_PRIVATE, json_encode($privateJwk, $jsonFlags), 0600);
         $this->writeFile(self::FILE_PUBLIC, json_encode($publicJwk, $jsonFlags), 0644);
         $this->writeFile(self::FILE_DID_DOCUMENT, json_encode($didDocument, $jsonFlags), 0644);
+
+        if (!openssl_pkey_export($key, $pem)) {
+            throw new RuntimeException('Gagal mengekspor kunci privat ke format PEM.');
+        }
+
+        $this->writeFile(self::FILE_PRIVATE_PEM, $pem, 0600);
     }
 
     private function didWeb(): string
