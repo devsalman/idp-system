@@ -20,7 +20,7 @@ class CredentialBuilder
     /**
      * @return array<string, mixed>
      */
-    public function build(Employee|Student $subject, string $holderDid, string $configId): array
+    public function build(Employee|Student $subject, string $holderDid, array $holderJwk, string $configId): array
     {
         $now = new \DateTimeImmutable();
 
@@ -31,6 +31,7 @@ class CredentialBuilder
             'nbf' => $now->getTimestamp(),
             'exp' => $now->modify('+1 year')->getTimestamp(),
             'jti' => bin2hex(random_bytes(16)),
+            'cnf' => ['jwk' => $holderJwk],
             'vc' => [
                 '@context' => [
                     'https://www.w3.org/2018/credentials/v1',

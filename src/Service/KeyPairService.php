@@ -157,7 +157,7 @@ class KeyPairService
         }
 
         try {
-            JWT::decode($proofJwt, JWK::parseKey($header['jwk']));
+            JWT::decode($proofJwt, JWK::parseKey($header['jwk'], $alg));
         } catch (\Throwable $e) {
             throw new RuntimeException('Tanda tangan proof tidak valid: ' . $e->getMessage());
         }
@@ -175,7 +175,16 @@ class KeyPairService
 
         $kid = $this->readPrivateKid();
 
-        return JWT::encode($claims, $pem, 'ES256', $kid);
+        $pub = $this->publicKey();
+        $embeddedJwk = [
+            'kty' => $pub['kty'],
+            'crv' => $pub['crv'],
+            'x' => $pub['x'],
+            'y' => $pub['y'],
+            'alg' => 'ES256',
+        ];
+
+        return JWT::encode($claims, $pem, 'ES256', $kid, ['jwk' => $embeddedJwk]);
     }
 
     private function readPrivateKid(): string

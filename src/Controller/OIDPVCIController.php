@@ -267,7 +267,7 @@ final class OIDPVCIController extends AbstractController
         $configId = is_string($configurationId) ? $configurationId : (is_string($identifier) ? $identifier : '');
 
         try {
-            $vcClaims = $this->credentialBuilder->build($subject, $holderDid, $configId);
+            $vcClaims = $this->credentialBuilder->build($subject, $holderDid, $holderJwk, $configId);
             $credential = $this->keyPairService->signCredential($vcClaims);
         } catch (\RuntimeException $e) {
             return $this->json([
@@ -365,6 +365,20 @@ final class OIDPVCIController extends AbstractController
                     'name' => 'Identitylab ID',
                 ],
             ],
+        ]);
+    }
+
+    #[Route('/.well-known/oauth-authorization-server', name: 'oidpvci_oauth_metadata', methods: ['GET'])]
+    public function oauthAuthorizationServerMetadata(Request $request): JsonResponse
+    {
+        $issuer = $request->getSchemeAndHttpHost();
+
+        return $this->json([
+            'issuer' => $issuer,
+            'token_endpoint' => $issuer . '/token',
+            'grant_types_supported' => ['urn:ietf:params:oauth:grant-type:pre-authorized_code'],
+            'token_endpoint_auth_methods_supported' => ['none'],
+            'response_types_supported' => [],
         ]);
     }
 
