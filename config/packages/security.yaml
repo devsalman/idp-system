@@ -32,4 +32,6 @@ security:
         - { path: ^/\.well-known/, roles: PUBLIC_ACCESS }
         - { path: ^/credential_offer, roles: PUBLIC_ACCESS }
         - { path: ^/token, roles: PUBLIC_ACCESS }
+        - { path: ^/nonce, roles: PUBLIC_ACCESS }
+        - { path: ^/credential, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: ROLE_ADMIN }

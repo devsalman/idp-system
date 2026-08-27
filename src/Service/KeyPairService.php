@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use Firebase\JWT\JWT;
+use Firebase\JWT\JWK;
 use RuntimeException;
 
 class KeyPairService
@@ -51,6 +52,120 @@ class KeyPairService
     }
 
     public function signAccessToken(array $claims): string
+    {
+        $pem = $this->readIfExists(self::FILE_PRIVATE_PEM);
+
+        if ($pem === null) {
+            throw new RuntimeException('Kunci privat PEM belum dibuat. Silakan generate key pair terlebih dahulu.');
+        }
+
+        $kid = $this->readPrivateKid();
+
+        return JWT::encode($claims, $pem, 'ES256', $kid);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function publicKey(): array
+    {
+        $content = $this->readIfExists(self::FILE_PUBLIC);
+
+        if ($content === null) {
+            throw new RuntimeException('Kunci publik JWK belum dibuat. Silakan generate key pair terlebih dahulu.');
+        }
+
+        $jwk = json_decode($content, true);
+
+        if (!is_array($jwk)) {
+            throw new RuntimeException('Kunci publik JWK tidak valid.');
+        }
+
+        return $jwk;
+    }
+
+    /**
+     * Verifies an access token JWT and returns its claims.
+     *
+     * @return array<string, mixed>
+     */
+    public function verifyAccessToken(string $jwt): array
+    {
+        $key = JWK::parseKey($this->publicKey(), 'ES256');
+
+        try {
+            $payload = JWT::decode($jwt, $key);
+        } catch (\Throwable $e) {
+            throw new RuntimeException('Access token tidak valid: ' . $e->getMessage());
+        }
+
+        return (array) $payload;
+    }
+
+    /**
+     * Validates an OID4VCI key proof JWT and returns the holder's public JWK
+     * from the JOSE header.
+     *
+     * @return array<string, mixed>
+     */
+    public function verifyProofJwt(string $proofJwt, string $expectedAud, string $expectedNonce): array
+    {
+        $parts = explode('.', $proofJwt);
+
+        if (count($parts) !== 3) {
+            throw new RuntimeException('Proof JWT tidak valid.');
+        }
+
+        $header = json_decode(self::base64UrlDecode($parts[0]), true);
+        $payload = json_decode(self::base64UrlDecode($parts[1]), true);
+
+        if (!is_array($header) || !is_array($payload)) {
+            throw new RuntimeException('Proof JWT tidak valid.');
+        }
+
+        if (($header['typ'] ?? null) !== 'openid4vci-proof+jwt') {
+            throw new RuntimeException('Proof JWT typ header tidak valid.');
+        }
+
+        if (!isset($header['jwk']) || !is_array($header['jwk'])) {
+            throw new RuntimeException('Proof JWT tidak memuat public key (jwk).');
+        }
+
+        $alg = $header['jwk']['alg'] ?? ($header['alg'] ?? null);
+        $allowedAlgs = ['ES256', 'ES384', 'ES512', 'EdDSA', 'RS256', 'PS256'];
+
+        if (!is_string($alg) || !in_array($alg, $allowedAlgs, true)) {
+            throw new RuntimeException('Proof JWT algoritma tidak didukung.');
+        }
+
+        if (($payload['aud'] ?? null) !== $expectedAud) {
+            throw new RuntimeException('Proof JWT aud tidak cocok.');
+        }
+
+        if (($payload['nonce'] ?? null) !== $expectedNonce) {
+            throw new RuntimeException('Proof JWT nonce tidak cocok atau kedaluwarsa.');
+        }
+
+        $iat = $payload['iat'] ?? null;
+
+        if (is_numeric($iat)) {
+            $skew = 60;
+
+            if (abs((int) $iat - time()) > $skew) {
+                throw new RuntimeException('Proof JWT iat di luar toleransi.');
+            }
+        }
+
+        try {
+            JWT::decode($proofJwt, JWK::parseKey($header['jwk']));
+        } catch (\Throwable $e) {
+            throw new RuntimeException('Tanda tangan proof tidak valid: ' . $e->getMessage());
+        }
+
+        return $header['jwk'];
+    }
+
+    public function signCredential(array $claims): string
     {
         $pem = $this->readIfExists(self::FILE_PRIVATE_PEM);
 
@@ -224,5 +339,18 @@ class KeyPairService
     private static function base64UrlEncode(string $data): string
     {
         return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
+
+    private static function base64UrlDecode(string $data): string
+    {
+        $remainder = strlen($data) % 4;
+
+        if ($remainder !== 0) {
+            $data .= str_repeat('=', 4 - $remainder);
+        }
+
+        $decoded = base64_decode(strtr($data, '-_', '+/'), true);
+
+        return $decoded === false ? '' : $decoded;
     }
 }
