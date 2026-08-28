@@ -173,18 +173,10 @@ class KeyPairService
             throw new RuntimeException('Kunci privat PEM belum dibuat. Silakan generate key pair terlebih dahulu.');
         }
 
-        $kid = $this->readPrivateKid();
+        $did = $this->didWeb();
+        $kid = $did . '#' . $this->readPrivateKid();
 
-        $pub = $this->publicKey();
-        $embeddedJwk = [
-            'kty' => $pub['kty'],
-            'crv' => $pub['crv'],
-            'x' => $pub['x'],
-            'y' => $pub['y'],
-            'alg' => 'ES256',
-        ];
-
-        return JWT::encode($claims, $pem, 'ES256', $kid, ['jwk' => $embeddedJwk]);
+        return JWT::encode($claims, $pem, 'ES256', $kid, ['typ' => 'vc+jwt']);
     }
 
     private function readPrivateKid(): string
@@ -234,7 +226,7 @@ class KeyPairService
             'kty' => 'EC',
             'x' => $x,
             'y' => $y,
-        ], JSON_THROW_ON_ERROR)));
+        ], JSON_THROW_ON_ERROR), true));
 
         $publicJwk = [
             'kty' => 'EC',

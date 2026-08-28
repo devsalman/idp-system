@@ -26,7 +26,7 @@ class CredentialBuilder
 
         $claims = [
             'iss' => $this->keyPairService->did(),
-            'sub' => $this->subjectUrn($subject),
+            'sub' => $holderDid,
             'iat' => $now->getTimestamp(),
             'nbf' => $now->getTimestamp(),
             'exp' => $now->modify('+1 year')->getTimestamp(),
